@@ -30,11 +30,7 @@ function prepareSFliteRepoFolder($folder) {
     Write-Host "Preparing SFLite Lite Repo..." -foregroundcolor "yellow"
 
     if ((Test-Path -Path $folder)) {
-           #Remove-Item -recurse -force $folder
-           # Our file path are too long
-
-           $command = "cmd /C rmdir /S /Q " + $folder
-           Invoke-Expression $command  
+           Remove-Item -recurse -force $folder
     }    
      New-Item -ItemType directory -Path $folder       
 }
@@ -295,27 +291,27 @@ cls
 prepareSFliteRepoFolder($sfliteFolder)
 CloneRepo -folder $storeFeederBaseFolder -repoUrl $gitHubReporUrl
 
-#checkDevConnectionStringFile($sfliteFolder)
+checkDevConnectionStringFile($sfliteFolder)
 #if connection strings are missing on dev, output an error and exit
-#verifyDevConnectionStrings($sfliteFolder)
+verifyDevConnectionStrings($sfliteFolder)
 
 #Need to be part of the environment setup as it requires a reboot
 #createXDrive($sfliteFolder)
-#importCustomModules($sfliteFolder)
+importCustomModules($sfliteFolder)
 
-# -siteUrl $sfliteIISBindingUrl -baseDirectory (join-path $sfliteFolder 'web\SFLite.Web.Site\')
-#createIISSites -siteUrl $sfliteSupportIISBindingUrl -baseDirectory (join-path $sfliteFolder 'SupportSite\SFLite.Web.SupportSite\')
+createIISSites -siteUrl $sfliteIISBindingUrl -baseDirectory (join-path $sfliteFolder 'web\SFLite.Web.Site\')
+createIISSites -siteUrl $sfliteSupportIISBindingUrl -baseDirectory (join-path $sfliteFolder 'SupportSite\SFLite.Web.SupportSite\')
 
-#createDbIfNeeded -dbName "DevSFLiteMain001" -folder $sfliteFolder
-#createDbIfNeeded -dbName "DevSFLiteMain002" -folder $sfliteFolder
-#createDbIfNeeded -dbName "DevSFLiteRoot" -folder $sfliteFolder 
-#createDbIfNeeded -dbName "DevSFLiteMiddleware" -folder $sfliteFolder
+createDbIfNeeded -dbName "DevSFLiteMain001" -folder $sfliteFolder
+createDbIfNeeded -dbName "DevSFLiteMain002" -folder $sfliteFolder
+createDbIfNeeded -dbName "DevSFLiteRoot" -folder $sfliteFolder 
+createDbIfNeeded -dbName "DevSFLiteMiddleware" -folder $sfliteFolder
 
-#InstallDependencies($sfliteFolder)
-#buildDotNetSolution($sfliteFolder)
-#performMigrations($sfliteFolder)
+InstallDependencies($sfliteFolder)
+buildDotNetSolution($sfliteFolder)
+performMigrations($sfliteFolder)
 
-#
-#runGulpTasks
 
-#waitForKeypress
+runGulpTasks
+
+waitForKeypress
