@@ -75,6 +75,7 @@ Install-ChocolateyVsixPackage EditorConfigPlugin https://visualstudiogallery.msd
 # Other Dev Tools and Libraries
 Write-BoxstarterMessage "Setting up other development tool and libraries..."
 cinst git.install
+cinst Git-Credential-Manager-for-Windows
 cinst python2
 
 cinst nodejs.install
@@ -97,6 +98,10 @@ cinst googlechrome
 cinst firefox
 
 #Other essential tools
-Write-BoxstarterMessage "Setting up other essentials tools..."
+Write-BoxstarterMessage "Setting up other essential tools..."
 cinst 7zip
 cinst fiddler4
+
+#Kick Off Build Solution
+Write-BoxstarterMessage "Setting up other essential tools..."
+Invoke-Expression BuoldSolution.ps1
