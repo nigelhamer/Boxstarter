@@ -30,7 +30,12 @@ function prepareSFliteRepoFolder($folder) {
     Write-Host "Preparing SFLite Lite Repo..." -foregroundcolor "yellow"
 
     if ((Test-Path -Path $folder)) {
-           Remove-Item -recurse -force $folder
+           #Remove-Item -recurse -force $folder
+           # Our file path are too long
+
+           Write-Host "Deleting Repo from local disk... This can take some time!" 
+           $command = "cmd /C rmdir /S /Q " + $folder
+           Invoke-Expression $command  
     }    
      New-Item -ItemType directory -Path $folder       
 }
@@ -259,14 +264,12 @@ function unlockWebConfigIPSecuritySection() {
 }
 
 
-function runGulpTasks(){
+function runGulpTasks($folder){
 
     Write-Host "Calling gulp sass"  -foregroundcolor "yellow" 
-	$oldWD = Get-Location
-	 Set-Location -Path (join-path $currentDirectory "web\SFLite.Web.Site")
+	 Set-Location -Path (join-path $folder "web\SFLite.Web.Site")
 	 & gulp sass 
 	 & gulp bundleTemplates
-	 Set-Location -Path $oldWD
 }
 
 
@@ -287,11 +290,10 @@ function waitForKeypress() {
 
 cls
 
-
 prepareSFliteRepoFolder($sfliteFolder)
 CloneRepo -folder $storeFeederBaseFolder -repoUrl $gitHubReporUrl
 
-checkDevConnectionStringFile($sfliteFolder)
+#checkDevConnectionStringFile($sfliteFolder)
 #if connection strings are missing on dev, output an error and exit
 verifyDevConnectionStrings($sfliteFolder)
 
@@ -311,7 +313,6 @@ InstallDependencies($sfliteFolder)
 buildDotNetSolution($sfliteFolder)
 performMigrations($sfliteFolder)
 
-
-runGulpTasks
+runGulpTasks($sfliteFolder)
 
 waitForKeypress
