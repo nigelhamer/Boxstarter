@@ -110,6 +110,9 @@ function createIISSites($siteUrl, $baseDirectory){
 
 
 function createDbIfNeeded($dbName, $folder) {
+
+    Set-Location $folder
+
 	#sflite.localtest.me
 	Write-Host "Creating DB if necessary $dbName"  -foregroundcolor "yellow"
 
@@ -293,7 +296,7 @@ cls
 prepareSFliteRepoFolder($sfliteFolder)
 CloneRepo -folder $storeFeederBaseFolder -repoUrl $gitHubReporUrl
 
-#checkDevConnectionStringFile($sfliteFolder)
+checkDevConnectionStringFile($sfliteFolder)
 #if connection strings are missing on dev, output an error and exit
 verifyDevConnectionStrings($sfliteFolder)
 
