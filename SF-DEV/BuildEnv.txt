@@ -66,6 +66,7 @@ if (Test-PendingReboot) { Invoke-Reboot }
 # Install SQL Express
 Write-BoxstarterMessage "Setting up SQL Express..."
 cinst mssqlserver2014express
+cinst mssqlservermanagementstudio2014express
 if (Test-PendingReboot) { Invoke-Reboot }
 
 # Install From platform installer
@@ -124,4 +125,4 @@ iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.co
 
 #Kick Off Build Solution
 Write-BoxstarterMessage "Run Pst build tasks..."
-iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/nigelhamer/Boxstarter/master/SF-DEV/PostBuildSolution.ps1.ps1'))
+iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/nigelhamer/Boxstarter/master/SF-DEV/PostBuildSolution.ps1'))

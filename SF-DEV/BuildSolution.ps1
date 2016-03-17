@@ -10,7 +10,7 @@ $gitHubRepoUrl = "https://github.com/StoreFeeder/sflite"
 $sfliteIISBindingUrl = "sflite.localtest.me" 
 $sfliteSupportIISBindingUrl = "sflitesupport.localtest.me"
 
-$dbHost = "(localdb)\MSSQLLocalDB"
+$dbHost = ".\SQLEXPRESS"
 
 $migrationExePath = "X:\NuGet\FluentMigrator.Tools.1.6.0\tools\AnyCPU\40\Migrate.exe"
 
@@ -132,7 +132,7 @@ function createDbIfNeeded($dbName, $folder) {
 	Write-Host "Creating DB if necessary $dbName"  -foregroundcolor "yellow"
 
 	[System.Reflection.Assembly]::LoadWithPartialName('Microsoft.SqlServer.SMO') | out-null
-	$srv = new-Object Microsoft.SqlServer.Management.Smo.Server("(localdb)\MSSQLLocalDB")
+	$srv = new-Object Microsoft.SqlServer.Management.Smo.Server($dbHost)
 	$db = $srv.Databases["$dbName"]
 	
 	$createDbSqlPath = (join-path $folder "SetupScripts\CreateDatabase.sql")
@@ -156,7 +156,7 @@ function buildDotNetSolution($folder) {
 
     set-location $folder
 
-    $buildSucceeded = Invoke-MsBuild -Path "SFLite.sln"  -MsBuildParameters  "/p:Configuration=Debug /target:Build" -ShowBuildWindow
+    $buildSucceeded = Invoke-MsBuild -Path "SFLite.sln"  -MsBuildParameters  "/p:Configuration=Debug /target:Build /nr" -ShowBuildWindow
 
 }
 
