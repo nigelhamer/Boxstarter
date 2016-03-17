@@ -6,7 +6,7 @@ $BuildConfiguration="Debug"
 $repoBasefolder = "c:\repo"
 $storeFeederBaseFolder = (join-path $repoBasefolder "/storefeeder")
 $sfliteFolder = (join-path $repoBasefolder "/storefeeder/sflite")
-$gitHubReporUrl = "https://github.com/StoreFeeder/sflite"
+$gitHubRepoUrl = "https://github.com/StoreFeeder/sflite"
 $sfliteIISBindingUrl = "sflite.localtest.me" 
 $sfliteSupportIISBindingUrl = "sflitesupport.localtest.me"
 
@@ -82,13 +82,28 @@ function installFontsForLabelGeneration() {
     }
 }
 
+function checkAppSecureFile($folder){
+	
+	$appSecurePath = (join-path $folder "Web\SFLite.Web.Site\Configuration\app.secure.LOCAL.config")
+	$appSecureSamplePath = (join-path $folder "Web\SFLite.Web.Site\Configuration\app.secure.LOCAL-EXAMPLE.config")
+
+	If ( (Test-Path $appSecurePath) -eq $false){
+		Write-Host "Development app.secure does not exist. copying the sample file"
+		Copy-Item $appSecureSamplePath $appSecurePath
+		Write-Host "The sample file is copied to $appSecurePath" -foregroundcolor "yellow"
+		Write-Host "Please check the contents" -foregroundcolor "yellow"
+	}
+}
+
 
 function CloneRepo($folder, $repoUrl) { 
     Write-Host "Cloning Repo from GitHub..." -foregroundcolor "yellow"
     Write-Host "Enter credential when prompted..." 
 
     set-location $folder
-    & git clone $repoUrl
+    git init
+    git config credential.modalprompt true
+    git clone $repoUrl
 }
 
 
@@ -168,22 +183,6 @@ function createXDrive($folder){
 
     $command = (join-path $folder ".NuGet\CreateAndMapXDrive.cmd")
     Invoke-Expression $command
-}
-
-function performMigrations($dbName) {	
-	
-	Write-Host "Running Sflite1 db migration" -foregroundcolor "yellow" 
-	& $migrationExePath --provider="Sqlserver2014" --a="$dataMigrationsPath" --c="SFLiteMain001"  
-		
-	Write-Host "Running Sflite2 db migration"  -foregroundcolor "yellow" 
-	& $migrationExePath --provider="Sqlserver2014" --a="$dataMigrationsPath" --c="SFLiteMain002" 
-	
-	Write-Host "Running Root db migration" -foregroundcolor "yellow" 
-	& $migrationExePath --provider="Sqlserver2014" --a="$rootDataMigrationsPath" --c="SFLiteRoot"  
-	
-	Write-Host "Running Middleware db migration" -foregroundcolor "yellow" 
-	& $migrationExePath --provider="Sqlserver2014" --a="$middlewareDataMigrationsPath" --c="SFLiteMiddleware"  
-	
 }
 
 
@@ -267,16 +266,6 @@ function unlockWebConfigIPSecuritySection() {
 }
 
 
-function runGulpTasks($folder){
-
-    Write-Host "Calling gulp sass"  -foregroundcolor "yellow" 
-	 Set-Location -Path (join-path $folder "web\SFLite.Web.Site")
-	 & gulp sass 
-	 & gulp bundleTemplates
-}
-
-
-
 function waitForKeypress() {
 
     # Flush any existing keypresses:
@@ -290,15 +279,20 @@ function waitForKeypress() {
 }
 
 
-
 cls
 
+$oldWD = Get-Location
+
 prepareSFliteRepoFolder($sfliteFolder)
-CloneRepo -folder $storeFeederBaseFolder -repoUrl $gitHubReporUrl
+CloneRepo -folder $storeFeederBaseFolder -repoUrl $gitHubRepoUrl
 
 checkDevConnectionStringFile($sfliteFolder)
 #if connection strings are missing on dev, output an error and exit
 verifyDevConnectionStrings($sfliteFolder)
+
+checkAppSecureFile($sfliteFolder)
+unlockWebConfigIPSecuritySection
+installFontsForLabelGeneration
 
 #Need to be part of the environment setup as it requires a reboot
 #createXDrive($sfliteFolder)
@@ -314,8 +308,5 @@ createDbIfNeeded -dbName "DevSFLiteMiddleware" -folder $sfliteFolder
 
 InstallDependencies($sfliteFolder)
 buildDotNetSolution($sfliteFolder)
-performMigrations($sfliteFolder)
 
-runGulpTasks($sfliteFolder)
-
-waitForKeypress
+Set-Location -Path $oldWD
