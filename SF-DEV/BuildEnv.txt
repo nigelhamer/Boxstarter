@@ -21,9 +21,15 @@ if (Test-PendingReboot) { Invoke-Reboot }
 Write-BoxstarterMessage "Setting up IIS..."
 cinst IIS-WebServerRole -source WindowsFeatures
 
-cinst IIS-ApplicationDevelopment -source WindowsFeatures
+# Some of the following items are commented out because they get installed by eariler features
+# They have been remove to speed up the process
+# It is useful to keep them here so we have a full list of what is installed
+#cinst IIS-ApplicationDevelopment -source WindowsFeatures
 cinst IIS-NetFxExtensibility45 -source WindowsFeatures
-cinst NetFx4Extended-ASPNET45 -source WindowsFeatures
+#cinst NetFx4Extended-ASPNET45 -source WindowsFeatures
+
+# Perhaps should force reboot here to stop errors appearing
+
 cinst IIS-ASPNet45 -source WindowsFeatures
 cinst IIS-ApplicationInit -source WindowsFeatures
 cinst IIS-CGI -source WindowsFeatures
@@ -32,19 +38,19 @@ cinst IIS-ISAPIFilter -source WindowsFeatures
 cinst IIS-ServerSideIncludes -source WindowsFeatures
 cinst IIS-WebSockets -source WindowsFeatures
 
-cinst IIS-CommonHttpFeatures -source WindowsFeatures
+#cinst IIS-CommonHttpFeatures -source WindowsFeatures
 cinst IIS-HttpRedirect -source WindowsFeatures
 
-cinst IIS-HealthAndDiagnostics -source WindowsFeatures
+#cinst IIS-HealthAndDiagnostics -source WindowsFeatures
 cinst IIS-CustomLogging -source WindowsFeatures
 cinst IIS-LoggingLibraries -source WindowsFeatures
 cinst IIS-RequestMonitor -source WindowsFeatures
 cinst IIS-HttpTracing -source WindowsFeatures
 
-cinst IIS-Performance -source WindowsFeatures
+#cinst IIS-Performance -source WindowsFeatures
 cinst IIS-HttpCompressionDynamic -source WindowsFeatures
 
-cinst IIS-Security -source WindowsFeatures
+#cinst IIS-Security -source WindowsFeatures
 cinst IIS-BasicAuthentication -source WindowsFeatures
 cinst IIS-CertProvider -source WindowsFeatures
 cinst IIS-ClientCertificateMappingAuthentication -source WindowsFeatures
@@ -63,7 +69,7 @@ if ((Test-Path -Path $folder)) {
     Remove-Item -recurse -force $folder
 }
 reg add "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\DOS Devices" /v "X:" /t REG_SZ /d "\??\C:\XDrive" /f
-Invoke-Reboot
+if (Test-PendingReboot) { Invoke-Reboot }
 
 # Install SQL Express
 Write-BoxstarterMessage "Setting up SQL Express..."
