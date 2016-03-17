@@ -57,6 +57,14 @@ cinst IIS-WindowsAuthentication -source WindowsFeatures
 cinst IIS-ManagementScriptingTools -source WindowsFeatures
 if (Test-PendingReboot) { Invoke-Reboot }
 
+Write-BoxstarterMessage "Create X Drive..."
+$folder = "C:\XDrive"
+if ((Test-Path -Path $folder)) {
+    Remove-Item -recurse -force $folder
+}
+reg add "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\DOS Devices" /v "X:" /t REG_SZ /d "\??\C:\XDrive" /f
+Invoke-Reboot
+
 # Install SQL Express
 Write-BoxstarterMessage "Setting up SQL Express..."
 cinst mssqlserver2014express
