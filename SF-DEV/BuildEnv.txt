@@ -78,7 +78,7 @@ cinst git.install
 cinst Git-Credential-Manager-for-Windows
 cinst python2
 
-cinst nodejs.install
+cinst nodejs.install -version 4.2.2
 
 npm install -g npm-windows-upgrade
 npm install -g jspm
