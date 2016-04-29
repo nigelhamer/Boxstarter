@@ -1,5 +1,5 @@
 #
-# Assumes that this is running on an preconfigured VS 2015 Enterprise Azure SDK 2.7 VM
+# Assumes that this is running on an VM with just Windows 10 installed
 #
 
 # Boxstarter options
@@ -69,7 +69,7 @@ if (Test-PendingReboot) { Invoke-Reboot }
 
 # Install From platform installer
 Write-BoxstarterMessage "Setting up Web Platform Installer Bits..."
-cinst VWDOrVs2015AzurePack.2.7 -source webpi
+cinst VWDOrVs2015AzurePack.2.9 -source webpi
 cinst urlrewrite2 -source webpi
 
 # VS extensions
@@ -82,7 +82,7 @@ Write-BoxstarterMessage "Setting up other development tool and libraries..."
 cinst git.install
 cinst python2
 
-cinst nodejs.install
+cinst nodejs.install -version 4.2.2
 
 npm install -g npm-windows-upgrade
 npm install -g jspm
@@ -102,6 +102,16 @@ cinst googlechrome
 cinst firefox
 
 #Other essential tools
-Write-BoxstarterMessage "Setting up other essentials tools..."
+Write-BoxstarterMessage "Setting up other essential tools..."
 cinst 7zip
 cinst fiddler4
+
+Write-BoxstarterMessage "Create X Drive..."
+$folder = "C:\XDrive"
+if ((Test-Path -Path $folder)) {
+    Remove-Item -recurse -force $folder
+}
+New-Item -ItemType directory -Path $folder  
+
+reg add "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\DOS Devices" /v "X:" /t REG_SZ /d "\??\C:\XDrive" /f
+if (Test-PendingReboot) { Invoke-Reboot }
