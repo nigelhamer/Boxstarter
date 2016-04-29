@@ -10,10 +10,11 @@ $Boxstarter.AutoLogin=$true # Save my password securely and auto-login after a r
 # Basic setup
 Update-ExecutionPolicy Unrestricted
 Set-ExplorerOptions -showHidenFilesFoldersDrives -showProtectedOSFiles -showFileExtensions
+
 if (Test-PendingReboot) { Invoke-Reboot }
 
 # Update Windows and reboot if necessary
-Install-WindowsUpdate -AcceptEula
+#Install-WindowsUpdate -AcceptEula
 if (Test-PendingReboot) { Invoke-Reboot }
 
 # Install IIS
